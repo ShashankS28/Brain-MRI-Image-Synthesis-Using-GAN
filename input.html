@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Brain MRI Image Synthesis </title>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="Free HTML Templates" name="keywords">
+    <meta content="Free HTML Templates" name="description">
+
+    <!-- Favicon -->
+    <link href="../static/img/favicon.ico" rel="icon">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet"> 
+
+    <!-- Icon Font Stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="../static/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+    <link href="../static/lib/animate/animate.min.css" rel="stylesheet">
+    <link href="../static/lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css" rel="stylesheet" />
+    <link href="../static/lib/twentytwenty/twentytwenty.css" rel="stylesheet" />
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="../static/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+    <link href="../static/css/style.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      width: 80%;
+      margin: 50px auto;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    label {
+      font-weight: bold;
+    }
+
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    button {
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .image-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+    }
+
+    .image-container img {
+      width: 128px;
+      height: 128px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Spinner Start -->
+    <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+        <div class="spinner-grow text-primary m-1" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+        <div class="spinner-grow text-dark m-1" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+        <div class="spinner-grow text-secondary m-1" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+    <!-- Spinner End -->
+
+
+<!-- Navbar Start -->
+<nav class="navbar navbar-expand-lg bg-white navbar-light shadow-sm px-5 py-3 py-lg-0">
+    <a href="{{url_for('home')}}" class="navbar-brand p-0">
+        <h2 class="m-0 text-primary"><i class="fa fa-brain me-2"></i>Brain MRI Image Sysnthesis Using GAN</h2>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarCollapse">
+        <div class="navbar-nav ms-auto py-0">
+            <a href="{{url_for('home')}}" class="nav-item nav-link ">Home</a>
+            <a href="{{url_for('about')}}" class="nav-item nav-link">About</a>
+         
+            <a href="{{url_for('generate')}}" class="nav-item nav-link ">Generate Images</a>
+            <a href="{{url_for('home1')}}" class="nav-item nav-link ">Brain Tumor</a>
+            <a href="{{url_for('logout')}}" class="nav-item nav-link">Logout</a>
+    </div>
+</nav>
+<!-- Navbar End -->
+  <div class="container">
+    <h1>Brain MRI Image Synthesis</h1>
+    
+    <!-- Input Form -->
+    <form id="generateForm">
+      <label for="numImages">Number of Images to Generate:</label>
+      <input type="number" id="numImages" name="numImages" placeholder="Enter number of images (e.g., 10)" required>
+      
+      <label for="noiseDim">Noise Dimension:</label>
+      <input type="number" id="noiseDim" name="noiseDim" placeholder="Enter noise dimension (e.g., 100)" required>
+
+      <button type="{{url_for('generate')}}">Generate Images</button>
+    </form>
+
+    <!-- Image Display Section -->
+    <h2>Synthesis Images:</h2>
+    <div class="image-container" id="imageContainer">
+      <!-- Images will be displayed here -->
+    </div>
+  </div>
+
+  <footer>
+    <p>&copy; 2025 Brain Tumor Image Generator. All rights reserved to Shashank.</p>
+  </footer>
+
+  <script>
+    // JavaScript for form submission and displaying images
+    const form = document.getElementById("generateForm");
+    const imageContainer = document.getElementById("imageContainer");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      imageContainer.innerHTML = ""; // Clear previous images
+      
+      const numImages = document.getElementById("numImages").value;
+      const noiseDim = document.getElementById("noiseDim").value;
+
+      // Make an API call to the backend to generate images
+      const response = await fetch("/generate_images", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ num_images: numImages, noise_dim: noiseDim }),
+      });
+
+      const data = await response.json();
+
+      // Display generated images
+      if (data.images) {
+        data.images.forEach((imageSrc) => {
+          const img = document.createElement("img");
+          img.src = imageSrc; // The backend should return image URLs/base64-encoded images
+          img.alt = "Generated Image";
+          imageContainer.appendChild(img);
+        });
+      } else {
+        alert("Failed to generate images. Please try again.");
+      }
+    });
+  </script>
+    <!-- Back to Top -->
+    <a href="#" class="btn btn-lg btn-primary btn-lg-square rounded back-to-top"><i class="bi bi-arrow-up"></i></a>
+
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../static/lib/wow/wow.min.js"></script>
+    <script src="../static/lib/easing/easing.min.js"></script>
+    <script src="../static/lib/waypoints/waypoints.min.js"></script>
+    <script src="../static/lib/owlcarousel/owl.carousel.min.js"></script>
+    <script src="../static/lib/tempusdominus/js/moment.min.js"></script>
+    <script src="../static/lib/tempusdominus/js/moment-timezone.min.js"></script>
+    <script src="../static/lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
+    <script src="../static/lib/twentytwenty/jquery.event.move.js"></script>
+    <script src="../static/lib/twentytwenty/jquery.twentytwenty.js"></script>
+
+    <!-- Template Javascript -->
+    <script src="../static/js/main.js"></script>
+</body>
+
+</html>
